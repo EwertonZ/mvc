@@ -1,0 +1,39 @@
+body.*
+{
+	margin: 0;
+	padding: 0;	
+
+}
+
+body{
+		background-color: #555555;
+		overflow: auto;
+}
+
+form>input{
+	line-height: 35px;
+	font-size: 1.2em;
+}
+
+form>select{
+	height: 40px;
+	font-size: 1.2em;
+}
+
+button{
+	min-width: 50px;
+	height: 42px;
+	font-size: 1.1em;
+	vertical-align: center;
+}
+
+.main
+{
+	font-family: tahoma;
+	background-color: lightgrey;
+	border: 2px groove grey;
+	margin: 8% auto;
+	width: 50%;
+	min-height: 400px;
+	padding: 4%;
+}
