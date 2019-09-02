@@ -19,7 +19,7 @@ class Bootstrap
 		
 		if(!isset($tokens[1])){
 
-			$controllerName = 'Home';
+			$controllerName = 'Home';			
 			$controllerMethod = 'index';
 
 		}else{
@@ -30,26 +30,32 @@ class Bootstrap
 
 				if(isset($tokens[2])){
 
-					$controllerMethod = strtolower($tokens[2]);
+					if(method_exists($controllerName,$tokens[2])){
 
-					if(isset($tokens[3])){
+						$controllerMethod = strtolower($tokens[2]);
 
-						if(sizeof($tokens) > 4){
+						if(isset($tokens[3])){
 
-							$controllerParam = array();
-							for ($i = 3; $i < sizeof($tokens); $i++ ) { 
-								array_push($controllerParam, $tokens[$i]);
+							if(sizeof($tokens) > 4){
+	
+								$controllerParam = array();
+								for ($i = 3; $i < sizeof($tokens); $i++ ) { 
+									array_push($controllerParam, $tokens[$i]);
+								}
+	
+							}else{
+	
+								$controllerParam = $tokens[3];
+	
 							}
-
-						}else{
-
-							$controllerParam = $tokens[3];
-
+	
 						}
 
-					}
+					}else {
 
-				
+						$controllerName = 'Erro';
+						$controllerMethod = 'index';
+					}				
 
 				}else{
 
@@ -59,24 +65,8 @@ class Bootstrap
 
 			}else{
 
-				$controllerName = 'Home';
-
-				if(method_exists($controllerName,$tokens[1])){
-
-					$controllerMethod = strtolower($tokens[1]);
-
-					if(isset($tokens[2])){
-
-						$controllerParam = $tokens[2];
-
-					}
-
-				}else{
-
-					$controllerName = 'Erro';
-					$controllerMethod = 'index';
-
-				}
+				$controllerName = 'Erro';
+				$controllerMethod = 'index';				
 			}
 		}	
 
