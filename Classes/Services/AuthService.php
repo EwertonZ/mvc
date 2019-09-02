@@ -1,5 +1,6 @@
 <?php 
-
+// Exemplo de um servico de Autenticação (Aprimorar)
+/*
 trait AuthService
 {
 
@@ -46,6 +47,7 @@ trait AuthService
 		return true;
 	}
 
-}
+}*/
+
 
 ?>
