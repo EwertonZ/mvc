@@ -5,36 +5,41 @@
  * 	
  */
 class Erro extends Controller
-{
+{	
 
 	public function index()
 	{
-		$tokens = explode('/', rtrim($_SERVER['REQUEST_URI'], '/'));
-		
-		if(!isset($tokens[1])){
-
-			$this->view->message = "Internal Error (Verify databases connection)!";
-
-		} else {
-
-			if(!class_exists(ucfirst($tokens[1]))){	
-
-				$this->view->message = "The Controller '<strong>". ucfirst($tokens[1]). "</strong>' doesn't exists!";
-
-			} else {
-
-				if(!isset($tokens[2])){
-
-					$this->view->message = "Internal Error (Verify databases connection or '<strong>". ucfirst($tokens[1]) ."</strong>' Classe Syntaxes)!";
-
-				} else { 
-
-					$this->view->message = "The Method '<strong>". ucfirst($tokens[2]) ."</strong>' don't exist on  '<strong>". ucfirst($tokens[1]) ."</strong>' Controller!";
-				}
-			}
-		}
-
+		$this->view->message = "Index, Internal Error (Verify databases connection)!";
 		$this->view->render('Views/errors/index.phtml');
 	}
 
+	public function internalError(){
+		$this->view->message = "Internal Error (Verify databases connection)!";
+		$this->view->render('Views/errors/index.phtml');
+	}
+
+	public function undefinedController($controller){
+		$this->view->message = "The Controller '<strong>". $controller. "</strong>' doesn't exists!";
+		$this->view->render('Views/errors/index.phtml');
+	}
+
+	public function sintaxError($controller){
+		$this->view->message = "Internal Error (Verify databases connection or '<strong>". $controller ."</strong>' Classe Syntaxes)!";
+		$this->view->render('Views/errors/index.phtml');
+	}
+
+	public function expectParams($method, $expectedParamsCount, $paramsPassedCount){
+		$this->view->message = "The Method '<strong>". ucfirst($method) ."</strong>' expects at least '<strong>". $expectedParamsCount ."</strong>' parameters: <strong> $paramsPassedCount </strong> passed to the method!";
+		$this->view->render('Views/errors/index.phtml');
+	}
+
+	public function dontExpectParams($method, $expectedParamsCount, $paramsPassedCount){
+		$this->view->message = "The Method '<strong>". ucfirst($method) ."</strong>' doesn't expects parameteres: <strong> $paramsPassedCount </strong> parameters passed to the method!";
+		$this->view->render('Views/errors/index.phtml');
+	}
+
+	public function methodDoesntExist($method, $controller){
+		$this->view->message = "The Method '<strong>". ucfirst($method) ."</strong>' don't exist on  '<strong>". $controller ."</strong>' Controller!";
+		$this->view->render('Views/errors/index.phtml');
+	}
 }

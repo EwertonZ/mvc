@@ -17,63 +17,110 @@ class Bootstrap
 		//Rounting
 		$tokens = explode('/', rtrim($_SERVER['REQUEST_URI'], '/'));
 		
+		// Se não foi passado um Controller na URL ($controllerName deve ser settado para o nome do Controller principal)
 		if(!isset($tokens[1])){
 
 			$controllerName = 'Home';			
 			$controllerMethod = 'index';
-
+		
+		// Se foi passado um Controller na URL
 		}else{
 
+			// Se o Controller Existe
 			if(class_exists(ucfirst($tokens[1]))){
 
 				$controllerName = ucfirst($tokens[1]);
 
+				// Se foi passado um Método na URL
 				if(isset($tokens[2])){
 
+					// Se o Método Existe
 					if(method_exists($controllerName,$tokens[2])){
 
 						$controllerMethod = strtolower($tokens[2]);
 
+						// Se foi passado Parametros na URL
 						if(isset($tokens[3])){
-
-							if(sizeof($tokens) > 4){
-	
+							
+							// Se URL possuir mais do que um Parametro
+							if(sizeof($tokens) > 4){	
 								$controllerParam = array();
 								for ($i = 3; $i < sizeof($tokens); $i++ ) { 
 									array_push($controllerParam, $tokens[$i]);
 								}
-	
+
+								$metodReflector = new ReflectionMethod($tokens[1], $tokens[2]);
+								$paramsCount = $metodReflector->getNumberOfParameters();
+
+								// Se o Método não espera nenhum Parametro
+								if($paramsCount == 0 ){
+									$controllerName = 'Erro';
+									$controllerMethod = 'dontExpectParams';
+									$controllerParam = array($tokens[2], $paramsCount, count($controllerParam));
+								// Se o Método espera parametros
+								}else{
+									if($paramsCount != count($controllerParam)){
+									$controllerName = 'Erro';
+									$controllerMethod = 'expectParams';
+									$controllerParam = array($tokens[2], $paramsCount, count($controllerParam));
+									}
+								}
+							
+							// Se URL possuir apenas 1 Parametro
 							}else{
-	
-								$controllerParam = $tokens[3];
+								$metodReflector = new ReflectionMethod($tokens[1], $tokens[2]);
+								$paramsCount = $metodReflector->getNumberOfParameters();
+								if($paramsCount == 1){
+									$controllerParam = $tokens[3];
+								}else{
+									$controllerName = 'Erro';
+									$controllerMethod = 'dontExpectParams';
+									$controllerParam = array($tokens[2], $paramsCount, 1);
+								}							
 	
 							}
 	
+						}else{
+							//Fazer a logica
 						}
-
+					
+					// Se o Método Não Existir
 					}else {
 
 						$controllerName = 'Erro';
-						$controllerMethod = 'index';
+						$controllerMethod = 'methodDoesntExist';
+						$controllerParam = array($tokens[2], $tokens[1]);
 					}				
-
+				
+				// Se não foi passado Método na URL (Todo controller deve ter um Método padrão chamado index para ser chamado por Default)
 				}else{
 
 					$controllerMethod = 'index';
 
 				}
-
+			// Se a Classe (Controller) não existir
 			}else{
 
 				$controllerName = 'Erro';
-				$controllerMethod = 'index';				
+				$controllerMethod = 'undefinedController';	
+				$controllerParam = $tokens[1];			
 			}
 		}	
 
 		//Dispatching
 		$controller = new $controllerName();
 		if(isset($controllerParam)){
-			$controller->$controllerMethod($controllerParam);
+			if(is_array($controllerParam)){
+				if(count($controllerParam) == 2){
+					$controller->$controllerMethod($controllerParam[0], $controllerParam[1]);
+				} elseif(count($controllerParam) == 3){
+					$controller->$controllerMethod($controllerParam[0], $controllerParam[1], $controllerParam[2]);
+				} else {
+					$controller->$controllerMethod($controllerParam[0], $controllerParam[1], $controllerParam[2], $controllerParam[3]);
+				}
+			}else{
+				$controller->$controllerMethod($controllerParam);
+			}
 		}else{
 			$controller->$controllerMethod();
 		}

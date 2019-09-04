@@ -7,12 +7,12 @@
 class Home extends Controller
 {	
 	
-	public function index()
+	public function index($a, $b, $c)
 	{		
 		// Essa variável menuLinks pode vir do banco de dados, de um arquivo de configuração ou outro lugar qualquer (Aprimorar)
 		$menuLinks = array('Docs' => '/docs', 'Contato' => '#', 'Configuração' => array('Perfil' => '#', 'Sair' => '#'));
 		$header = "Views/static/dochead.phtml";
-		$title = "Bem Vindo-Home";		
+		$title = "Bem Vindo-Home";
 
 		$this->view->render(
 			'Views/home/index.phtml', 
@@ -20,7 +20,7 @@ class Home extends Controller
 				'welcome' => 'Bem vindo à Página-Home', 
 				'menu' => $menuLinks,
 				'error' => array(
-					'isError' => false, 
+					'isError' => true, 
 					'errorView' => 'Views/home/index.phtml'
 				)
 			), 
