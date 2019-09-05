@@ -126,10 +126,70 @@ class Bootstrap
 				}
 			// Se a Classe (Controller) não existir
 			}else{
+				if(method_exists('Home',$tokens[1])){
+					if(isset($tokens[2])){
+						if(sizeof($tokens) > 3){	
+							$controllerParam = array();
+							for ($i = 2; $i < sizeof($tokens); $i++ ) { 
+								array_push($controllerParam, $tokens[$i]);
+							}
 
-				$controllerName = 'Erro';
-				$controllerMethod = 'undefinedController';	
-				$controllerParam = $tokens[1];			
+							$metodReflector = new ReflectionMethod('Home', $tokens[1]);
+							$paramsCount = $metodReflector->getNumberOfParameters();
+
+							// Se o Método não espera nenhum Parametro
+							if($paramsCount == 0 ){
+								$controllerName = 'Erro';
+								$controllerMethod = 'dontExpectParams';
+								$controllerParam = array($tokens[1], $paramsCount, count($controllerParam));
+							// Se o Método espera parametros
+							}else{
+								if($paramsCount != count($controllerParam)){
+									$controllerName = 'Erro';
+									$controllerMethod = 'expectParams';
+									$controllerParam = array($tokens[1], $paramsCount, count($controllerParam));
+								}else{
+									$controllerName = 'Home';
+									$controllerMethod = $tokens[1];									
+								}
+							}
+						
+						// Se URL possuir apenas 1 Parametro
+						}else{
+							$metodReflector = new ReflectionMethod('Home', $tokens[1]);
+							$paramsCount = $metodReflector->getNumberOfParameters();
+							// Se Método requer 1 parametro
+							if($paramsCount == 1){
+								$controllerParam = $tokens[2];
+							// Se Método requer mais de 1 parametro
+							}elseif($paramsCount > 1){
+								$controllerName = 'Erro';
+								$controllerMethod = 'expectParams';
+								$controllerParam = array($tokens[1], $paramsCount, 1);
+							}else{
+								$controllerName = 'Erro';
+								$controllerMethod = 'dontExpectParams';
+								$controllerParam = array($tokens[1], $paramsCount, 1);
+							}							
+
+						}
+					}else{
+						$metodReflector = new ReflectionMethod('Home', $tokens[1]);
+						$paramsCount = $metodReflector->getNumberOfParameters();
+						if($paramsCount != 0){
+							$controllerName = 'Erro';
+							$controllerMethod = 'expectParams';
+							$controllerParam = array($tokens[1], $paramsCount, 0);
+						}else{
+							$controllerName = 'Home';
+							$controllerMethod = $tokens[1];
+						}
+					}
+				}else{
+					$controllerName = 'Erro';
+					$controllerMethod = 'undefinedController';	
+					$controllerParam = $tokens[1];	
+				}		
 			}
 		}	
 
