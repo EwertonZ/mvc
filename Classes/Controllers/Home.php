@@ -7,7 +7,7 @@
 class Home extends Controller
 {	
 	
-	public function index($a, $b, $c)
+	public function index()
 	{		
 		// Essa variável menuLinks pode vir do banco de dados, de um arquivo de configuração ou outro lugar qualquer (Aprimorar)
 		$menuLinks = array('Docs' => '/docs', 'Contato' => '#', 'Configuração' => array('Perfil' => '#', 'Sair' => '#'));

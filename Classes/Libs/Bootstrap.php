@@ -19,10 +19,16 @@ class Bootstrap
 		
 		// Se não foi passado um Controller na URL ($controllerName deve ser settado para o nome do Controller principal)
 		if(!isset($tokens[1])){
-
-			$controllerName = 'Home';			
-			$controllerMethod = 'index';
-		
+			$metodReflector = new ReflectionMethod('Home', 'index');
+			$paramsCount = $metodReflector->getNumberOfParameters();
+			if($paramsCount != 0){
+				$controllerName = 'Erro';
+				$controllerMethod = 'expectParams';
+				$controllerParam = array('index', $paramsCount, 0);
+			}else{
+				$controllerName = 'Home';			
+				$controllerMethod = 'index';
+			}
 		// Se foi passado um Controller na URL
 		}else{
 
@@ -70,8 +76,14 @@ class Bootstrap
 							}else{
 								$metodReflector = new ReflectionMethod($tokens[1], $tokens[2]);
 								$paramsCount = $metodReflector->getNumberOfParameters();
+								// Se Método requer 1 parametro
 								if($paramsCount == 1){
 									$controllerParam = $tokens[3];
+								// Se Método requer mais de 1 parametro
+								}elseif($paramsCount > 1){
+									$controllerName = 'Erro';
+									$controllerMethod = 'expectParams';
+									$controllerParam = array($tokens[2], $paramsCount, 1);
 								}else{
 									$controllerName = 'Erro';
 									$controllerMethod = 'dontExpectParams';
@@ -79,9 +91,16 @@ class Bootstrap
 								}							
 	
 							}
-	
+						// Se não Foi passado parametros na URL
 						}else{
-							//Fazer a logica
+							$metodReflector = new ReflectionMethod($tokens[1], $tokens[2]);
+							$paramsCount = $metodReflector->getNumberOfParameters();
+							if($paramsCount != 0){
+								$controllerName = 'Erro';
+								$controllerMethod = 'expectParams';
+								$controllerParam = array($tokens[2], $paramsCount, 0);
+							}
+
 						}
 					
 					// Se o Método Não Existir
@@ -94,8 +113,15 @@ class Bootstrap
 				
 				// Se não foi passado Método na URL (Todo controller deve ter um Método padrão chamado index para ser chamado por Default)
 				}else{
-
-					$controllerMethod = 'index';
+					$metodReflector = new ReflectionMethod($tokens[1], 'index');
+					$paramsCount = $metodReflector->getNumberOfParameters();
+					if($paramsCount != 0){
+						$controllerName = 'Erro';
+						$controllerMethod = 'expectParams';
+						$controllerParam = array('index', $paramsCount, 0);
+					}else{
+						$controllerMethod = 'index';
+					}
 
 				}
 			// Se a Classe (Controller) não existir
